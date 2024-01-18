@@ -1,14 +1,13 @@
-# Bacteriology module
+# Appointment module
 
-API project for Bacteriology
+API project for AppointmentSync
 
 ## Build
 
-[![Build Status](https://travis-ci.org/Bahmni/bacteriology.svg?branch=master)](https://travis-ci.org/Bahmni/bacteriology)
 
 Clone the repository and build the omod
    
-    git clone https://github.com/Bahmni/bacteriology.git
-    cd bacteriology
+    git clone https://github.com/duserik/appointmentSync.git
+    cd appointmentSync
     mvn clean install
     
