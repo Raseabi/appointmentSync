@@ -17,12 +17,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appointmentsync.api.AppointmentSyncService;
+import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The main controller.
@@ -37,7 +39,7 @@ public class AppointmentSyncController {
 
 		AppointmentSyncService service = Context.getService(AppointmentSyncService.class);
 
-		Collection<Object[]> appointments = service.getAllAppointments();
+		List<PatientAppointment> appointments = service.getAllAppointments();
 
 
 

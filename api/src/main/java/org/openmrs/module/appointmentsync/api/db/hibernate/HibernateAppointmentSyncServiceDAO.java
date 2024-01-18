@@ -16,12 +16,16 @@ package org.openmrs.module.appointmentsync.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.openmrs.Patient;
 import org.openmrs.module.appointmentsync.api.db.AppointmentSyncServiceDAO;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * It is a default implementation of  {@link AppointmentSyncServiceDAO}.
@@ -47,11 +51,11 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 
 
 	@Override
-	public Collection<Object[]> getAllAppointments() {
+	public List<PatientAppointment> getAllAppointments() {
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("concat(b.given_name, family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender from patient_appointment a " +
+		sb.append("select concat(b.given_name, family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender from patient_appointment a " +
 				"left join person_name b on a.patient_id = b.person_id " +
 				"left join person c on a.patient_id = c.person_id;");
 
@@ -59,6 +63,18 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 
 		Collection<Object[]> collection = session.createSQLQuery(sb.toString()).list();
 
-		return collection;
+		List<PatientAppointment> appointments = new ArrayList<PatientAppointment>();
+
+		for (Object[] ob : collection) {
+			PatientAppointment pa = new PatientAppointment();
+			pa.setNames(ob[0].toString());
+			pa.setStartDate(ob[1].toString());
+			pa.setEndDate(ob[2].toString());
+			pa.setGender(ob[3].toString());
+
+			appointments.add(pa);
+		}
+
+		return appointments;
 	}
 }

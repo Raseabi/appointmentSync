@@ -14,8 +14,10 @@
 package org.openmrs.module.appointmentsync.api.db;
 
 import org.openmrs.module.appointmentsync.api.AppointmentSyncService;
+import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  *  Database methods for {@link AppointmentSyncService}.
@@ -25,5 +27,5 @@ public interface AppointmentSyncServiceDAO {
 	/*
 	 * Add DAO methods here
 	 */
-	public Collection<Object[]> getAllAppointments();
+	public List<PatientAppointment> getAllAppointments();
 }

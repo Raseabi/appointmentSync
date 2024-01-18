@@ -18,8 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointmentsync.api.AppointmentSyncService;
 import org.openmrs.module.appointmentsync.api.db.AppointmentSyncServiceDAO;
+import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * It is a default implementation of {@link AppointmentSyncService}.
@@ -41,7 +43,7 @@ public class AppointmentSyncServiceImpl extends BaseOpenmrsService implements Ap
     public AppointmentSyncServiceDAO getDao() { return dao; }
 
     @Override
-    public Collection<Object[]> getAllAppointments() {
+    public List<PatientAppointment> getAllAppointments() {
         return dao.getAllAppointments();
     }
 }

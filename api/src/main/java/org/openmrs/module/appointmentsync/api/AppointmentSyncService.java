@@ -13,11 +13,14 @@
  */
 package org.openmrs.module.appointmentsync.api;
 
+import org.openmrs.Patient;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * This service exposes module's core functionality. It is a Spring managed bean which is configured in moduleApplicationContext.xml.
@@ -37,5 +40,5 @@ public interface AppointmentSyncService extends OpenmrsService {
      * Add service methods here
      *
      */
-    public Collection<Object[]> getAllAppointments();
+    public List<PatientAppointment> getAllAppointments();
 }
