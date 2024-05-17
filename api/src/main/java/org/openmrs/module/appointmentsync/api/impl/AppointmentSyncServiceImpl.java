@@ -46,4 +46,9 @@ public class AppointmentSyncServiceImpl extends BaseOpenmrsService implements Ap
     public List<PatientAppointment> getAllAppointments() {
         return dao.getAllAppointments();
     }
+
+    @Override
+    public List<PatientAppointment> getMissedAppointments() {
+        return dao.getMissedAppointments();
+    }
 }

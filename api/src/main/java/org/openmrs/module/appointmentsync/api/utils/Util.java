@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
-    public static void postAppointmentApi(String urlString, String json) {
+    public static void postAppointmentApi(String urlString, String json, String crudType) {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod(crudType);
             conn.setRequestProperty("Content-Type", "application/json");
 
             OutputStream os = conn.getOutputStream();
@@ -59,7 +59,6 @@ public class Util {
             String output;
 
             while ((output = br.readLine()) != null) {
-                //System.out.println(">>>> "+ output);
                 paList = objectMapper.readValue(output, new TypeReference<List<PatientAppointment>>(){});
             }
             conn.disconnect();

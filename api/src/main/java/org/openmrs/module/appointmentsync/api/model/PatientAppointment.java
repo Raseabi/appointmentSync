@@ -12,10 +12,11 @@ public class PatientAppointment {
     private String location;
     private String status;
     private String comment;
+    private String lastUpdated;
 
     public PatientAppointment() {};
 
-    public PatientAppointment(String patientAppointmentId, String identifier, String phone, String names, String startDate, String endDate, String gender, String location, String status, String comment) {
+    public PatientAppointment(String patientAppointmentId, String identifier, String phone, String names, String startDate, String endDate, String gender, String location, String status, String comment, String lastUpdated) {
         this.patientAppointmentId = patientAppointmentId;
         this.identifier = identifier;
         this.phone = phone;
@@ -26,6 +27,7 @@ public class PatientAppointment {
         this.location = location;
         this.status = status;
         this.comment = comment;
+        this.lastUpdated = lastUpdated;
     }
 
     public String getPatientAppointmentId() {
@@ -98,6 +100,13 @@ public class PatientAppointment {
       this.comment = value;
     }
 
+    public String getLastUpdated() {
+        return this.lastUpdated;
+    }
+    public void setLastUpdated(String value) {
+        this.lastUpdated = value;
+    }
+
     @Override
     public String toString() {
         return "PatientAppointment{" +
@@ -111,6 +120,7 @@ public class PatientAppointment {
                 ", location='" + location + '\'' +
                 ", status='" + status + '\'' +
                 ", comment='" + comment + '\'' +
+                ", lastUpdate='" + lastUpdated + '\'' +
                 '}';
     }
 }

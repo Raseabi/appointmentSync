@@ -41,4 +41,5 @@ public interface AppointmentSyncService extends OpenmrsService {
      *
      */
     public List<PatientAppointment> getAllAppointments();
+    public List<PatientAppointment> getMissedAppointments();
 }

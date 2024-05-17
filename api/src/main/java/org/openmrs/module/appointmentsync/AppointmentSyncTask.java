@@ -11,24 +11,25 @@ import java.util.List;
 
 public class AppointmentSyncTask extends AbstractTask {
 
-    private String URL = "";
-
     @Override
     public void execute() {
 
-        String url = "http://173.212.221.182:8090/api/appointments";
+        String url = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud");
+
+//        String url = "http://173.212.221.182:8090/api/appointments";
 
         AppointmentSyncService service = Context.getService(AppointmentSyncService.class);
         List<PatientAppointment> dueAppointments = service.getAllAppointments(); // Only those due in 3 days
 
         for(PatientAppointment pa : dueAppointments) {
             if(!published(pa.getPatientAppointmentId(), url)) {
-                Util.postAppointmentApi(url, Util.convertObjectToJson(pa));
+                Util.postAppointmentApi(url, Util.convertObjectToJson(pa), "POST");
             }
         }
 
     }
 
+    // Check if appointment exists on cloud app
     public boolean published(String paId, String urlString) {
         boolean pub = false;
         for(PatientAppointment pa : Util.getAllAppointmentsApi(urlString)) {
@@ -38,5 +39,8 @@ public class AppointmentSyncTask extends AbstractTask {
         }
         return pub;
     }
+
+    // Check if status was set
+
 
 }

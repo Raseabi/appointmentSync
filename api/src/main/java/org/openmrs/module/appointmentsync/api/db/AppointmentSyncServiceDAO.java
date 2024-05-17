@@ -28,4 +28,5 @@ public interface AppointmentSyncServiceDAO {
 	 * Add DAO methods here
 	 */
 	public List<PatientAppointment> getAllAppointments();
+	public List<PatientAppointment> getMissedAppointments();
 }
