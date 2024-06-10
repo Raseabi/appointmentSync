@@ -16,6 +16,7 @@
             <th>End Date</th>
             <th>Gender</th>
             <th>Facility</th>
+            <th>Location</th>
             <th>Status</th>
             <th>Comments</th>
         </tr>
@@ -31,8 +32,9 @@
                 <td>${appointment.endDate}</td>
                 <td>${appointment.gender}</td>
                 <td>${appointment.location}</td>
-                <td>${appointment.comment}</td>
+                <td>${appointment.parentLocation}</td>
                 <td>${appointment.status}</td>
+                <td>${appointment.comment}</td>
             <tr>
         </c:forEach>
     </tbody>

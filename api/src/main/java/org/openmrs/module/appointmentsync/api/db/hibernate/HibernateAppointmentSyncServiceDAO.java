@@ -20,6 +20,7 @@ import org.openmrs.module.appointmentsync.api.db.AppointmentSyncServiceDAO;
 
 import org.hibernate.Session;
 import org.openmrs.module.appointmentsync.api.model.PatientAppointment;
+import org.openmrs.module.appointmentsync.api.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,14 +54,27 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("select a.patient_appointment_id, pi.identifier, '' as phone, concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as location, a.status, a.comments, a.date_changed, a.date_created from patient_appointment a " +
+		sb.append("select a.patient_appointment_id, pi.identifier, " +
+				"case " +
+				"   when pa1.value is null then pa2.value " +
+				"   when pa1.value is not null then pa1.value " +
+				"   else ' ' " +
+				"end as 'phone', " +
+				"concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as facility, l1.name as location, a.status, a.comments, " +
+				"case " +
+				" when a.date_changed is null then a.date_created " +
+				" else a.date_changed " +
+				"end as 'date_changed', a.date_created from patient_appointment a " +
 				"left join person_name b on a.patient_id = b.person_id " +
 				"left join patient_identifier pi on a.patient_id = pi.patient_id " + 
 				"left join patient_identifier_type pit on pi.identifier_type = pit.patient_identifier_type_id " +
 				"left join location l on a.location_id = l.location_id " +
+				"left join location l1 on l.parent_location = l1.location_id  " +
 				"left join person c on a.patient_id = c.person_id " +
-				"where pit.patient_identifier_type_id = 4 " +
-				"and DATEDIFF(start_date_time, now()) = 3;");
+				"left join person_attribute pa1 on a.patient_id = pa1.person_id and pa1.person_attribute_type_id = 15 " +
+				"left join person_attribute pa2 on a.patient_id = pa2.person_id and pa2.person_attribute_type_id = 27 " +
+				"where pit.patient_identifier_type_id = 3 " +
+				"and DATEDIFF(start_date_time, now()) = 3 group by a.patient_id;");
 
 		Session session = sessionFactory.getCurrentSession();
 
@@ -71,16 +85,17 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 		for (Object[] ob : collection) {
 			PatientAppointment pa = new PatientAppointment();
 			pa.setNames(ob[3].toString());
-			pa.setStartDate(ob[4].toString());
-			pa.setEndDate(ob[5].toString());
+			pa.setStartDate(Util.convertToIsoDatetime(ob[4].toString()));
+			pa.setEndDate(Util.convertToIsoDatetime(ob[5].toString()));
 			pa.setGender(ob[6].toString());
 			pa.setPatientAppointmentId(ob[0].toString());
 			pa.setIdentifier(ob[1].toString());
 			pa.setLocation(ob[7].toString());
-			pa.setPhone(ob[2].toString());
-			pa.setComment(ob[9].toString());
-			pa.setStatus(ob[8].toString());
-			pa.setLastUpdated(ob[10].toString());
+			pa.setParentLocation(ob[8].toString());
+			pa.setPhone(ob[2] != null ? ob[2].toString() : " ".toString());
+			pa.setComment(ob[10].toString());
+			pa.setStatus(ob[9].toString());
+			pa.setLastUpdated(Util.convertToIsoDatetime(ob[11].toString()));
 
 			appointments.add(pa);
 		}
@@ -93,15 +108,27 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("select a.patient_appointment_id, pi.identifier, '' as phone, concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as location, a.status, a.comments, a.date_changed from patient_appointment a " +
+		sb.append("select a.patient_appointment_id, pi.identifier, " +
+				"when " +
+				"   when pa1.value is null then pa2.value " +
+				"   when pa1.value is not null then pa1.value " +
+				"	else ' ' " +
+				"end as 'phone', " +
+				"concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as location, a.status, a.comments," +
+				"case " +
+				"  when a.date_changed is null then a.date_created " +
+				"  else a.date_changed " +
+				"end as 'date_changed' from patient_appointment a " +
 				"left join person_name b on a.patient_id = b.person_id " +
 				"left join patient_identifier pi on a.patient_id = pi.patient_id " +
 				"left join patient_identifier_type pit on pi.identifier_type = pit.patient_identifier_type_id " +
 				"left join location l on a.location_id = l.location_id " +
 				"left join person c on a.patient_id = c.person_id " +
-				"where pit.patient_identifier_type_id = 4 " +
+				"left join person_attribute pa1 on a.patient_id = pa1.person_id and pa1.person_attribute_type_id = 15 " +
+				"left join person_attribute pa2 on a.patient_id = pa2.person_id and pa2.person_attribute_type_id = 27 " +
+				"where pit.patient_identifier_type_id = 3 " +
 				"and DATEDIFF(start_date_time, now()) = 6 " +
-				"and a.status = 'Missed'");
+				"and a.status = 'Missed' group by a.patient_id;");
 
 		Session session = sessionFactory.getCurrentSession();
 
