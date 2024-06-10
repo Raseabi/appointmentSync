@@ -109,12 +109,12 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 		StringBuffer sb = new StringBuffer();
 
 		sb.append("select a.patient_appointment_id, pi.identifier, " +
-				"when " +
+				"case " +
 				"   when pa1.value is null then pa2.value " +
 				"   when pa1.value is not null then pa1.value " +
 				"	else ' ' " +
 				"end as 'phone', " +
-				"concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as location, a.status, a.comments," +
+				"concat(b.given_name, ' ', family_name) as names, a.start_date_time as startDate, a.end_date_time as endDate, c.gender, l.name as facility, l1.name as location, a.status, a.comments," +
 				"case " +
 				"  when a.date_changed is null then a.date_created " +
 				"  else a.date_changed " +
@@ -123,6 +123,7 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 				"left join patient_identifier pi on a.patient_id = pi.patient_id " +
 				"left join patient_identifier_type pit on pi.identifier_type = pit.patient_identifier_type_id " +
 				"left join location l on a.location_id = l.location_id " +
+				"left join location l1 on l.parent_location = l1.location_id  " +
 				"left join person c on a.patient_id = c.person_id " +
 				"left join person_attribute pa1 on a.patient_id = pa1.person_id and pa1.person_attribute_type_id = 15 " +
 				"left join person_attribute pa2 on a.patient_id = pa2.person_id and pa2.person_attribute_type_id = 27 " +
@@ -145,10 +146,11 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 			pa.setPatientAppointmentId(ob[0].toString());
 			pa.setIdentifier(ob[1].toString());
 			pa.setLocation(ob[7].toString());
+			pa.setParentLocation(ob[8].toString());
 			pa.setPhone(ob[2].toString());
-			pa.setComment(ob[9].toString());
-			pa.setStatus(ob[8].toString());
-			pa.setLastUpdated(ob[10].toString());
+			pa.setComment(ob[10].toString());
+			pa.setStatus(ob[9].toString());
+			pa.setLastUpdated(ob[11].toString());
 
 			appointments.add(pa);
 		}
