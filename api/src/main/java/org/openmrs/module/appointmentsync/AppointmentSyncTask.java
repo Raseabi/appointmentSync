@@ -16,31 +16,34 @@ public class AppointmentSyncTask extends AbstractTask {
 
         String url = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud");
 
-//        String url = "http://173.212.221.182:8090/api/appointments";
+        // String url = "http://173.212.221.182:8090/api/appointments";
+
+        String username = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud.username");
+        String password = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud.password");
 
         AppointmentSyncService service = Context.getService(AppointmentSyncService.class);
         List<PatientAppointment> dueAppointments = service.getAllAppointments(); // Only those due in 3 days
 
-        for(PatientAppointment pa : dueAppointments) {
-            if(!published(pa.getPatientAppointmentId(), url)) {
-                Util.postAppointmentApi(url, Util.convertObjectToJson(pa), "POST");
+        for (PatientAppointment pa : dueAppointments) {
+            if (!published(pa.getPatientAppointmentId(), url,username,password)) {
+                Util.postAppointmentApi(url, username,password,Util.convertObjectToJson(pa), "POST");
             }
         }
 
     }
 
     // Check if appointment exists on cloud app
-    public boolean published(String paId, String urlString) {
+    public boolean published(String paId, String urlString,String username,String password) {
         boolean pub = false;
-        for(PatientAppointment pa : Util.getAllAppointmentsApi(urlString)) {
+        for (PatientAppointment pa : Util.getAllAppointmentsApi(urlString,username,password)) {
             if (pa.getPatientAppointmentId().equals(paId))
                 pub = true;
-            else pub = false;
+            else
+                pub = false;
         }
         return pub;
     }
 
     // Check if status was set
-
 
 }

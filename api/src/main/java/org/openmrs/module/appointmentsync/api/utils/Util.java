@@ -15,22 +15,30 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
 public class Util {
-    public static void postAppointmentApi(String urlString, String json, String crudType) {
+    public static void postAppointmentApi(String urlString,String username, String password ,String json, String crudType) {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod(crudType);
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
             conn.setRequestProperty("Content-Type", "application/json");
+
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+            conn.setRequestProperty("Authorization", authHeaderValue);
+
+
 
             OutputStream os = conn.getOutputStream();
             os.write(json.getBytes());
             os.flush();
+
             if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
             }
@@ -48,13 +56,19 @@ public class Util {
         }
     }
 
-    public static List<PatientAppointment> getAllAppointmentsApi(String urlString) {
+    public static List<PatientAppointment> getAllAppointmentsApi(String urlString,String username, String password) {
         List<PatientAppointment> paList = new ArrayList<PatientAppointment>();
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            String authHeaderValue = "Basic " + encodedAuth;
+            conn.setRequestProperty("Authorization", authHeaderValue);
+
             if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP Error code : "
                         + conn.getResponseCode());
@@ -75,16 +89,14 @@ public class Util {
     }
 
     public static String convertObjectToJson(PatientAppointment pa) {
-        String jsonStr = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            System.out.println("Object ========> " + pa.toString());
-            jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pa);
+            String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(pa);
             return jsonStr;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return jsonStr;
+        return null;
     }
 
     public static PatientAppointment convertJsonToObject(String json, Class c) {
@@ -97,7 +109,8 @@ public class Util {
         }
         return null;
     }
-    public static String convertToIsoDatetime(String dateStr) {
+	
+	 public static String convertToIsoDatetime(String dateStr) {
         String nowAsISO = "";
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
