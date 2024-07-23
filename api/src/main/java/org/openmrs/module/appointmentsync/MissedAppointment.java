@@ -8,35 +8,37 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 
 import java.util.List;
 
-public class MissedAppointment extends AbstractTask  {
+public class MissedAppointment extends AbstractTask {
 
     @Override
     public void execute() {
 
         String url = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud");
+        String username = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud.username");
+        String password = Context.getAdministrationService().getGlobalProperty("appointmentsync.cloud.password");
 
         AppointmentSyncService service = Context.getService(AppointmentSyncService.class);
         List<PatientAppointment> missedAppointments = service.getMissedAppointments();
 
-        for(PatientAppointment pa : missedAppointments) {
-            if(!missed(pa.getPatientAppointmentId(), url)) {
-                Util.postAppointmentApi(url, Util.convertObjectToJson(pa), "PUT");
+        for (PatientAppointment pa : missedAppointments) {
+            if (!missed(pa.getPatientAppointmentId(), url,username,password)) {
+                Util.postAppointmentApi(url,username,password ,Util.convertObjectToJson(pa), "PUT");
             }
         }
 
     }
 
     // Check if status was set
-    public boolean missed(String paId, String urlString) {
+    public boolean missed(String paId, String urlString,String username,String password) {
         boolean pub = false;
-        for(PatientAppointment pa : Util.getAllAppointmentsApi(urlString)) {
+        for (PatientAppointment pa : Util.getAllAppointmentsApi(urlString,username,password)) {
             if (pa.getPatientAppointmentId().equals(paId))
-                if(pa.getStatus().equals("Missing"))
+                if (pa.getStatus().equals("Missing"))
                     pub = true;
-                else pub = false;
+                else
+                    pub = false;
         }
         return pub;
     }
-
 
 }
