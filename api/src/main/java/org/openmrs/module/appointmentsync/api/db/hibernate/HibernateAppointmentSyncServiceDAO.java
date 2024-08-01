@@ -118,7 +118,9 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 				"case " +
 				"  when a.date_changed is null then a.date_created " +
 				"  else a.date_changed " +
-				"end as 'date_changed' from patient_appointment a " +
+				"end as 'date_changed' " +
+				"(select count(*) from obs ob where ob.person_id = a.patient_id and datediff(a.start_date_time, ob.obs_datetime) <= 6) as obs" +
+				"from patient_appointment a " +
 				"left join person_name b on a.patient_id = b.person_id " +
 				"left join patient_identifier pi on a.patient_id = pi.patient_id " +
 				"left join patient_identifier_type pit on pi.identifier_type = pit.patient_identifier_type_id " +
@@ -138,21 +140,23 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 		List<PatientAppointment> appointments = new ArrayList<PatientAppointment>();
 
 		for (Object[] ob : collection) {
-			PatientAppointment pa = new PatientAppointment();
-			pa.setNames(ob[3].toString());
-			pa.setStartDate(ob[4].toString());
-			pa.setEndDate(ob[5].toString());
-			pa.setGender(ob[6].toString());
-			pa.setPatientAppointmentId(ob[0].toString());
-			pa.setIdentifier(ob[1].toString());
-			pa.setLocation(ob[7].toString());
-			pa.setParentLocation(ob[8].toString());
-			pa.setPhone(ob[2].toString());
-			pa.setComment(ob[10].toString());
-			pa.setStatus(ob[9].toString());
-			pa.setLastUpdated(ob[11].toString());
+			if(Integer.parseInt(ob[12].toString()) == 0) {
+				PatientAppointment pa = new PatientAppointment();
+				pa.setNames(ob[3].toString());
+				pa.setStartDate(ob[4].toString());
+				pa.setEndDate(ob[5].toString());
+				pa.setGender(ob[6].toString());
+				pa.setPatientAppointmentId(ob[0].toString());
+				pa.setIdentifier(ob[1].toString());
+				pa.setLocation(ob[7].toString());
+				pa.setParentLocation(ob[8].toString());
+				pa.setPhone(ob[2].toString());
+				pa.setComment(ob[10].toString());
+				pa.setStatus(ob[9].toString());
+				pa.setLastUpdated(ob[11].toString());
 
-			appointments.add(pa);
+				appointments.add(pa);
+			}
 		}
 
 		return appointments;
