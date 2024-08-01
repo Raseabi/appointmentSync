@@ -118,7 +118,7 @@ public class HibernateAppointmentSyncServiceDAO implements AppointmentSyncServic
 				"case " +
 				"  when a.date_changed is null then a.date_created " +
 				"  else a.date_changed " +
-				"end as 'date_changed' " +
+				"end as 'date_changed', " +
 				"(select count(*) from obs ob where ob.person_id = a.patient_id and datediff(a.start_date_time, ob.obs_datetime) <= 6) as obs" +
 				"from patient_appointment a " +
 				"left join person_name b on a.patient_id = b.person_id " +
